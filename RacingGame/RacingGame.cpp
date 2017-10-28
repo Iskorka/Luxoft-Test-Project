@@ -73,6 +73,8 @@ public:
 	virtual void setY(int Y) = 0;
 	virtual int getSpeed() = 0;
 	virtual void setSpeed(int sp) = 0;
+	virtual int getDefaultSpeed() = 0;
+	virtual char getSkin() = 0;
 
 	void placeCar() {
 		setX(8);
@@ -93,19 +95,19 @@ public:
 			}
 
 		//ìàøèíêà
-		track[y][x] = 'o';
-		track[y - 1][x] = 'o';
-		track[y - 2][x] = 'o';
-		track[y - 3][x] = 'o';
-		track[y][x - 1] = 'o';
-		track[y][x + 1] = 'o';
-		track[y - 2][x - 1] = 'o';
-		track[y - 2][x + 1] = 'o';
+		track[y][x] = getSkin();
+		track[y - 1][x] = getSkin();
+		track[y - 2][x] = getSkin();
+		track[y - 3][x] = getSkin();
+		track[y][x - 1] = getSkin();
+		track[y][x + 1] = getSkin();
+		track[y - 2][x - 1] = getSkin();
+		track[y - 2][x + 1] = getSkin();
 	}
 
 	void drawTrack() {
 		system("cls");
-		cout << "Score: " << score << " \tBest score: " << best << endl << "Time: " << getTime() << " \tBest time: " << bestTime << endl << "Speed: " << abs(getSpeed() - 150) << endl;
+		cout << "Score: " << score << " \tBest score: " << best << endl << "Time: " << getTime() << " \tBest time: " << bestTime << endl << "Speed: " << getSpeed() << endl;
 		for (int i = 0; i < 18; i++) {
 			cout << track[i] << endl;
 		}
@@ -136,15 +138,17 @@ public:
 	}
 
 	bool gameOver() {
+		char car = getSkin();
+
 		int y = getY();
 		int x = getX();
-		if (track[y][x] != 'o' || track[y - 1][x] != 'o' || track[y - 2][x] != 'o'
-			|| track[y - 3][x] != 'o' || track[y][x - 1] != 'o' || track[y][x + 1] != 'o'
-			|| track[y - 2][x - 1] != 'o' || track[y - 2][x + 1] != 'o') {
+		if (track[y][x] != car || track[y - 1][x] != car || track[y - 2][x] != car
+			|| track[y - 3][x] != car || track[y][x - 1] != car || track[y][x + 1] != car
+			|| track[y - 2][x - 1] != car || track[y - 2][x + 1] != car) {
 			cout << "Game Over\nPress ENTER to try again" << endl;
 			if (score > best) best = score;
 			if (getTime() > bestTime) bestTime = getTime();
-			setSpeed(150);
+			setSpeed(getDefaultSpeed());
 			obstacleY = 0;
 			obstacleX = randObstacleX();
 			return false;
@@ -176,12 +180,13 @@ public:
 	}
 };
 
-class Car : public Game
+class RegularCar : public Game
 {
 private:
 	int x;
 	int y;
 	int speed;
+	char skin;
 
 	void removeCar() {
 		track[y][x] = ' ';
@@ -194,7 +199,9 @@ private:
 		track[y - 2][x + 1] = ' ';
 	}
 public:
-	Car() : x(8), y(14), speed(150) {}
+	RegularCar() : x(8), y(14), speed(getDefaultSpeed()), skin('o') {}
+
+	int getDefaultSpeed() { return 150; }
 
 	void control() {
 		switch (_getch()) {
@@ -212,7 +219,7 @@ public:
 
 		case 72: if (speed > 50) speed -= 50; break;
 
-		case 80: if (speed < 250) speed += 50; break;
+		case 80: if (speed < 150) speed += 50; break;
 
 		case 13:
 			while (true) {
@@ -224,14 +231,14 @@ public:
 		case 27: exit(0); break;
 		}
 
-		track[y][x] = 'o';
-		track[y - 1][x] = 'o';
-		track[y - 2][x] = 'o';
-		track[y - 3][x] = 'o';
-		track[y][x - 1] = 'o';
-		track[y][x + 1] = 'o';
-		track[y - 2][x - 1] = 'o';
-		track[y - 2][x + 1] = 'o';
+		track[y][x] = skin;
+		track[y - 1][x] = skin;
+		track[y - 2][x] = skin;
+		track[y - 3][x] = skin;
+		track[y][x - 1] = skin;
+		track[y][x + 1] = skin;
+		track[y - 2][x - 1] = skin;
+		track[y - 2][x + 1] = skin;
 	}
 
 	void changeSpeed() {
@@ -243,15 +250,105 @@ public:
 	void setX(int X) { x = X; }
 	void setY(int Y) { y = Y; }
 
-	int getSpeed() { return speed; }
+	int getSpeed() { return abs(speed - 150); }
 	void setSpeed(int sp) { speed = sp; }
+	char getSkin() { return skin; }
+};
+
+class VerySlowCar : public Game
+{
+private:
+	int x;
+	int y;
+	int speed;
+	char skin;
+
+	void removeCar() {
+		track[y][x] = ' ';
+		track[y - 1][x] = ' ';
+		track[y - 2][x] = ' ';
+		track[y - 3][x] = ' ';
+		track[y][x - 1] = ' ';
+		track[y][x + 1] = ' ';
+		track[y - 2][x - 1] = ' ';
+		track[y - 2][x + 1] = ' ';
+	}
+public:
+	VerySlowCar() : x(8), y(14), speed(getDefaultSpeed()), skin('S') {}
+
+	int getDefaultSpeed() { return 400; }
+
+	void control() {
+		switch (_getch()) {
+		case 75:
+			if (x == 2) break;
+			removeCar();
+			x -= 1;
+			break;
+
+		case 77:
+			if (x == 14) break;
+			removeCar();
+			x += 1;
+			break;
+
+		case 72: if (speed > 300) speed -= 20; break;
+
+		case 80: if (speed < 400) speed += 20; break;
+
+		case 13:
+			while (true) {
+				if (_getch() == 13) {
+					break;
+				}
+			}; break;
+
+		case 27: exit(0); break;
+		}
+
+		track[y][x] = skin;
+		track[y - 1][x] = skin;
+		track[y - 2][x] = skin;
+		track[y - 3][x] = skin;
+		track[y][x - 1] = skin;
+		track[y][x + 1] = skin;
+		track[y - 2][x - 1] = skin;
+		track[y - 2][x + 1] = skin;
+	}
+
+	void changeSpeed() {
+		Sleep(speed);
+	}
+
+	int getX() { return x; }
+	int getY() { return y; }
+	void setX(int X) { x = X; }
+	void setY(int Y) { y = Y; }
+
+	int getSpeed() { return abs(speed - 400); }
+	void setSpeed(int sp) { speed = sp; }
+
+	char getSkin() { return skin; }
 };
 
 int main()
 {
-	Game* g = &Car();
+	string choice;
+	Game* g[] = {&VerySlowCar(), &RegularCar()};
 
-	g->run();
+	while (true) {
+		cout << "Do you want slow car or the regular one? (input slow/regular)" << endl;
+
+		cin >> choice;
+		system("cls");
+		if (choice == "slow") {
+			g[0]->run();
+		}
+		else if (choice == "regular") {
+			g[1]->run();
+		}
+		else cout << "INPUT SOMETHING RIGHT!" << endl;
+	}
 
 	return 0;
 }
