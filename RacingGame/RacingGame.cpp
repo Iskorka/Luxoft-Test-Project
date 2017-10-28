@@ -39,7 +39,7 @@ private:
 	int best;
 	int startTime, endTime, bestTime;
 	int obstacleX, obstacleY;
-	bool gameIsOn;
+	bool gameIsOn; //флаг игрового процесса
 
 	void removeObstacle() {
 		track[obstacleY][obstacleX] = ' ';
@@ -52,7 +52,8 @@ private:
 		track[obstacleY + 1][obstacleX - 1] = ' ';
 		track[obstacleY + 2][obstacleX - 1] = ' ';
 	}
-
+	
+	//генерация случайного значения оси Х препятствия
 	int randObstacleX() {
 		srand(time(0));
 		return rand() % (13 - 2 + 1) + 2; //rand() (b - a + 1) + a
@@ -76,6 +77,7 @@ public:
 	virtual int getDefaultSpeed() = 0;
 	virtual char getSkin() = 0;
 
+	//размещает машинку на треке
 	void placeCar() {
 		setX(8);
 		setY(14);
@@ -85,16 +87,15 @@ public:
 
 		gameIsOn = true;
 
-		//çàïóñê îòñ÷¸òà âðåìåíè
+		//начало отсчёта
 		startTime = clock();
 
-		//î÷èñòêà òðåêà
+		//очистка трека
 		for (int i = 1; i<16; i++)
 			for (int j = 0; j < 18; j++) {
 				track[j][i] = ' ';
 			}
 
-		//ìàøèíêà
 		track[y][x] = getSkin();
 		track[y - 1][x] = getSkin();
 		track[y - 2][x] = getSkin();
@@ -113,6 +114,7 @@ public:
 		}
 	}
 
+	//создаёт и приближает препятствие
 	void generateObstacle() {
 		if (obstacleY < 15) {
 			removeObstacle();
@@ -136,7 +138,8 @@ public:
 			obstacleX = randObstacleX();
 		}
 	}
-
+	
+	//при столкновении с препятствием сбрасывает показатели, устанавливает рекорды и снимает флаг игрового процесса
 	bool gameOver() {
 		char car = getSkin();
 
@@ -155,7 +158,8 @@ public:
 		}
 		return true;
 	}
-
+	
+	//алгоритм запуска игры
 	void run() {
 		cout << "\n\t o\n\tooo\tRACING CHAMPION PRO GALAXY 9000 v1 GO\n\t o\n\tooo\n\nPress ENTER to RACE" << endl;
 		cout << "\n\n\nCONTROLS:\nLEFT ARROW/RIGHT ARROW - move left/right\nUP ARROW/DOWN ARROW - speed up/down\nENTER - pause/resume\nESC - quit" << endl;
@@ -180,6 +184,7 @@ public:
 	}
 };
 
+//обычная машинка
 class RegularCar : public Game
 {
 private:
@@ -201,8 +206,10 @@ private:
 public:
 	RegularCar() : x(8), y(14), speed(getDefaultSpeed()), skin('o') {}
 
+	//скорость по умолчанию
 	int getDefaultSpeed() { return 150; }
 
+	//назначение клавиш: 75 - лево, 77 - право, 72 - верх, 80 - низ, 13 - энтер, 27 - эскейп
 	void control() {
 		switch (_getch()) {
 		case 75:
@@ -240,7 +247,8 @@ public:
 		track[y - 2][x - 1] = skin;
 		track[y - 2][x + 1] = skin;
 	}
-
+	
+	//установка задержки (представляет скорость)
 	void changeSpeed() {
 		Sleep(speed);
 	}
@@ -255,6 +263,7 @@ public:
 	char getSkin() { return skin; }
 };
 
+//супермедленная машинка - класс, идентичный предыдущему, но с изменёнными полями speed и skin
 class VerySlowCar : public Game
 {
 private:
@@ -333,7 +342,10 @@ public:
 
 int main()
 {
+	//пользователь может выбрать машинку
 	string choice;
+	
+	//указателям присваиваются ссылки на временные объекты
 	Game* g[] = {&VerySlowCar(), &RegularCar()};
 
 	while (true) {
@@ -341,12 +353,15 @@ int main()
 
 		cin >> choice;
 		system("cls");
+		
+		//запуск алгоритма
 		if (choice == "slow") {
 			g[0]->run();
 		}
 		else if (choice == "regular") {
 			g[1]->run();
 		}
+		
 		else cout << "INPUT SOMETHING RIGHT!" << endl;
 	}
 
