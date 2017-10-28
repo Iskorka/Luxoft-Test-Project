@@ -1,4 +1,4 @@
 ﻿  RacingGame.cpp
-c:\users\user\documents\visual studio 2015\projects\racinggame\racinggame\racinggame.cpp(108): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+c:\users\user\documents\visual studio 2015\projects\racinggame\racinggame\racinggame.cpp(57): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
   RacingGame.vcxproj -> C:\Users\User\Documents\Visual Studio 2015\Projects\RacingGame\Debug\RacingGame.exe
   RacingGame.vcxproj -> C:\Users\User\Documents\Visual Studio 2015\Projects\RacingGame\Debug\RacingGame.pdb (Full PDB)
