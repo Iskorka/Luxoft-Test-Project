@@ -34,37 +34,8 @@ std::vector<std::string> track = {
 
 class Game
 {
-private:
-	int score;
-	int best;
-	int startTime, endTime, bestTime;
-	int obstacleX, obstacleY;
-	bool gameIsOn; //флаг игрового процесса
-
-	void removeObstacle() {
-		track[obstacleY][obstacleX] = ' ';
-		track[obstacleY + 1][obstacleX] = ' ';
-		track[obstacleY + 2][obstacleX] = ' ';
-		track[obstacleY][obstacleX + 1] = ' ';
-		track[obstacleY + 1][obstacleX + 1] = ' ';
-		track[obstacleY + 2][obstacleX + 1] = ' ';
-		track[obstacleY][obstacleX - 1] = ' ';
-		track[obstacleY + 1][obstacleX - 1] = ' ';
-		track[obstacleY + 2][obstacleX - 1] = ' ';
-	}
-	
-	//генерация случайного значения оси Х препятствия
-	int randObstacleX() {
-		srand(time(0));
-		return rand() % (13 - 2 + 1) + 2; //rand() (b - a + 1) + a
-	}
-
-	int getTime() {
-		return (endTime - startTime) / 1000;
-	}
-
 public:
-	Game() : score(0), best(0), endTime(0), bestTime(0), obstacleX(randObstacleX()), obstacleY(0) {}
+	Game() : score_(0), best_(0), endTime_(0), bestTime_(0), obstacleX_(computeObstacleX()), obstacleY_(0) {}
 
 	virtual void control() = 0;
 	virtual void changeSpeed() = 0;
@@ -77,20 +48,22 @@ public:
 	virtual int getDefaultSpeed() = 0;
 	virtual char getSkin() = 0;
 
-	//размещает машинку на треке
-	void placeCar() {
+
+	//place a car on the track
+	void placeCar() 
+	{
 		setX(8);
 		setY(14);
 
 		int x = getX();
 		int y = getY();
 
-		gameIsOn = true;
+		gameIsOn_ = true;
 
-		//начало отсчёта
-		startTime = clock();
+		//start of time counting
+		startTime_ = clock();
 
-		//очистка трека
+		//clear the track
 		for (int i = 1; i<16; i++)
 			for (int j = 0; j < 18; j++) {
 				track[j][i] = ' ';
@@ -106,264 +79,424 @@ public:
 		track[y - 2][x + 1] = getSkin();
 	}
 
-	void drawTrack() {
+
+	void drawTrack() 
+	{
 		system("cls");
-		cout << "Score: " << score << " \tBest score: " << best << endl << "Time: " << getTime() << " \tBest time: " << bestTime << endl << "Speed: " << getSpeed() << endl;
+
+		cout << "Score: " << score_ << " \tBest score: " << best_ << endl << "Time: " << getTime() << " \tBest time: " << bestTime_ << endl << "Speed: " << getSpeed() << endl;
+
 		for (int i = 0; i < 18; i++) {
 			cout << track[i] << endl;
 		}
 	}
 
-	//создаёт и приближает препятствие
-	void generateObstacle() {
-		if (obstacleY < 15) {
+
+	//create and approach an obstacle
+	void generateObstacle() 
+	{
+		if (obstacleY_ < 15) {
 			removeObstacle();
 
-			obstacleY += 1;
-			track[obstacleY][obstacleX] = 'T';
-			track[obstacleY + 1][obstacleX] = 'T';
-			track[obstacleY + 2][obstacleX] = 'T';
-			track[obstacleY][obstacleX + 1] = 'T';
-			track[obstacleY + 1][obstacleX + 1] = 'T';
-			track[obstacleY + 2][obstacleX + 1] = 'T';
-			track[obstacleY][obstacleX - 1] = 'T';
-			track[obstacleY + 1][obstacleX - 1] = 'T';
-			track[obstacleY + 2][obstacleX - 1] = 'T';
+			obstacleY_ += 1;
+			track[obstacleY_][obstacleX_] = 'T';
+			track[obstacleY_ + 1][obstacleX_] = 'T';
+			track[obstacleY_ + 2][obstacleX_] = 'T';
+			track[obstacleY_][obstacleX_ + 1] = 'T';
+			track[obstacleY_ + 1][obstacleX_ + 1] = 'T';
+			track[obstacleY_ + 2][obstacleX_ + 1] = 'T';
+			track[obstacleY_][obstacleX_ - 1] = 'T';
+			track[obstacleY_ + 1][obstacleX_ - 1] = 'T';
+			track[obstacleY_ + 2][obstacleX_ - 1] = 'T';
 		}
 
-		else if (obstacleY == 15) {
+		else if (obstacleY_ == 15) {
 			removeObstacle();
 
-			obstacleY = 0;
-			obstacleX = randObstacleX();
+			obstacleY_ = 0;
+			obstacleX_ = computeObstacleX();
 		}
 	}
-	
-	//при столкновении с препятствием сбрасывает показатели, устанавливает рекорды и снимает флаг игрового процесса
-	bool gameOver() {
+
+
+	//if car bumped into an obstacle, reset score and time, set best results and take off gameIsOn flag
+	bool isBumped() 
+	{
 		char car = getSkin();
 
 		int y = getY();
 		int x = getX();
+
 		if (track[y][x] != car || track[y - 1][x] != car || track[y - 2][x] != car
 			|| track[y - 3][x] != car || track[y][x - 1] != car || track[y][x + 1] != car
 			|| track[y - 2][x - 1] != car || track[y - 2][x + 1] != car) {
 			cout << "Game Over\nPress ENTER to try again" << endl;
-			if (score > best) best = score;
-			if (getTime() > bestTime) bestTime = getTime();
+
+			if (score_ > best_) 
+				best_ = score_;
+
+			if (getTime() > bestTime_) 
+				bestTime_ = getTime();
+
 			setSpeed(getDefaultSpeed());
-			obstacleY = 0;
-			obstacleX = randObstacleX();
+
+			obstacleY_ = 0;
+			obstacleX_ = computeObstacleX();
+
 			return false;
 		}
 		return true;
 	}
-	
-	//алгоритм запуска игры
-	void run() {
+
+
+	//algorithm that launches the game
+	void run() 
+	{
 		cout << "\n\t o\n\tooo\tRACING CHAMPION PRO GALAXY 9000 v1 GO\n\t o\n\tooo\n\nPress ENTER to RACE" << endl;
 		cout << "\n\n\nCONTROLS:\nLEFT ARROW/RIGHT ARROW - move left/right\nUP ARROW/DOWN ARROW - speed up/down\nENTER - pause/resume\nESC - quit" << endl;
+
 		while (true) {
 			if (_getch() == 13) {
 				placeCar();
-				while (gameIsOn) {
+
+				while (gameIsOn_) {
 					while (_kbhit()) {
 						control(); //virtual from Car
 					}
+
 					changeSpeed(); //virtual from Car
+
 					drawTrack();
-					endTime = clock();
-					gameIsOn = gameOver();
-					if (score > 5) {
+
+					endTime_ = clock();
+
+					gameIsOn_ = isBumped();
+
+					if (score_ > 5) {
 						generateObstacle();
 					}
-					score++;
+
+					score_++;
 				}
 			}
 		}
 	}
+
+
+private:
+	int score_;
+	int best_;
+	int startTime_, endTime_, bestTime_;
+	int obstacleX_, obstacleY_;
+	bool gameIsOn_; //game-is-running-flag
+
+	void removeObstacle() 
+	{
+		track[obstacleY_][obstacleX_] = ' ';
+		track[obstacleY_ + 1][obstacleX_] = ' ';
+		track[obstacleY_ + 2][obstacleX_] = ' ';
+		track[obstacleY_][obstacleX_ + 1] = ' ';
+		track[obstacleY_ + 1][obstacleX_ + 1] = ' ';
+		track[obstacleY_ + 2][obstacleX_ + 1] = ' ';
+		track[obstacleY_][obstacleX_ - 1] = ' ';
+		track[obstacleY_ + 1][obstacleX_ - 1] = ' ';
+		track[obstacleY_ + 2][obstacleX_ - 1] = ' ';
+	}
+
+
+	//generate random X axis for obstacle
+	int computeObstacleX() 
+	{
+		srand(time(0));
+		return rand() % (13 - 2 + 1) + 2; //rand() (b - a + 1) + a
+	}
+
+
+	int getTime() 
+	{
+		return (endTime_ - startTime_) / 1000;
+	}
 };
 
-//обычная машинка
+
+
+
+//just a regular car
 class RegularCar : public Game
 {
-private:
-	int x;
-	int y;
-	int speed;
-	char skin;
-
-	void removeCar() {
-		track[y][x] = ' ';
-		track[y - 1][x] = ' ';
-		track[y - 2][x] = ' ';
-		track[y - 3][x] = ' ';
-		track[y][x - 1] = ' ';
-		track[y][x + 1] = ' ';
-		track[y - 2][x - 1] = ' ';
-		track[y - 2][x + 1] = ' ';
-	}
 public:
-	RegularCar() : x(8), y(14), speed(getDefaultSpeed()), skin('o') {}
+	RegularCar() : carX_(8), carY_(14), speed_(getDefaultSpeed()), skin_('o') {}
 
-	//скорость по умолчанию
-	int getDefaultSpeed() { return 150; }
 
-	//назначение клавиш: 75 - лево, 77 - право, 72 - верх, 80 - низ, 13 - энтер, 27 - эскейп
-	void control() {
+	int getDefaultSpeed() 
+	{
+		return 150; 
+	}
+
+
+	//key binding: 75 - left, 77 - right, 72 - up, 80 - down, 13 - enter, 27 - esc
+	void control() 
+	{
 		switch (_getch()) {
 		case 75:
-			if (x == 2) break;
+			if (carX_ == 2) 
+				break;
+
 			removeCar();
-			x -= 1;
+			carX_ -= 1;
 			break;
 
 		case 77:
-			if (x == 14) break;
+			if (carX_ == 14) 
+				break;
+
 			removeCar();
-			x += 1;
+			carX_ += 1;
 			break;
 
-		case 72: if (speed > 50) speed -= 50; break;
+		case 72: if (speed_ > 50) 
+					speed_ -= 50; 
+			break;
 
-		case 80: if (speed < 150) speed += 50; break;
+		case 80: if (speed_ < 150) 
+					speed_ += 50; 
+			break;
 
 		case 13:
 			while (true) {
 				if (_getch() == 13) {
 					break;
 				}
-			}; break;
+			}; 
+			break;
 
-		case 27: exit(0); break;
+		case 27: exit(0); 
+			break;
 		}
 
-		track[y][x] = skin;
-		track[y - 1][x] = skin;
-		track[y - 2][x] = skin;
-		track[y - 3][x] = skin;
-		track[y][x - 1] = skin;
-		track[y][x + 1] = skin;
-		track[y - 2][x - 1] = skin;
-		track[y - 2][x + 1] = skin;
-	}
-	
-	//установка задержки (представляет скорость)
-	void changeSpeed() {
-		Sleep(speed);
+		track[carY_][carX_] = skin_;
+		track[carY_ - 1][carX_] = skin_;
+		track[carY_ - 2][carX_] = skin_;
+		track[carY_ - 3][carX_] = skin_;
+		track[carY_][carX_ - 1] = skin_;
+		track[carY_][carX_ + 1] = skin_;
+		track[carY_ - 2][carX_ - 1] = skin_;
+		track[carY_ - 2][carX_ + 1] = skin_;
 	}
 
-	int getX() { return x; }
-	int getY() { return y; }
-	void setX(int X) { x = X; }
-	void setY(int Y) { y = Y; }
 
-	int getSpeed() { return abs(speed - 150); }
-	void setSpeed(int sp) { speed = sp; }
-	char getSkin() { return skin; }
+	//set delay (which represents speed of the car)
+	void changeSpeed() 
+	{
+		Sleep(speed_);
+	}
+
+
+	int getX() {
+		return carX_; 
+	}
+
+
+	int getY() { 
+		return carY_; 
+	}
+
+
+	void setX(int x) { 
+		carX_ = x;
+	}
+
+
+	void setY(int y) {
+		carY_ = y; 
+	}
+
+
+	int getSpeed() {
+		return abs(speed_ - 150);
+	}
+
+
+	void setSpeed(int speed) {
+		speed_ = speed; 
+	}
+
+
+	char getSkin() { 
+		return skin_; 
+	}
+
+
+private:
+	int carX_;
+	int carY_;
+	int speed_;
+	char skin_;
+
+
+	void removeCar() 
+	{
+		track[carY_][carX_] = ' ';
+		track[carY_ - 1][carX_] = ' ';
+		track[carY_ - 2][carX_] = ' ';
+		track[carY_ - 3][carX_] = ' ';
+		track[carY_][carX_ - 1] = ' ';
+		track[carY_][carX_ + 1] = ' ';
+		track[carY_ - 2][carX_ - 1] = ' ';
+		track[carY_ - 2][carX_ + 1] = ' ';
+	}
 };
 
-//супермедленная машинка - класс, идентичный предыдущему, но с изменёнными полями speed и skin
+
+//superslow car — identical to previous class, but with different speed_ and skin_ fields
 class VerySlowCar : public Game
 {
-private:
-	int x;
-	int y;
-	int speed;
-	char skin;
-
-	void removeCar() {
-		track[y][x] = ' ';
-		track[y - 1][x] = ' ';
-		track[y - 2][x] = ' ';
-		track[y - 3][x] = ' ';
-		track[y][x - 1] = ' ';
-		track[y][x + 1] = ' ';
-		track[y - 2][x - 1] = ' ';
-		track[y - 2][x + 1] = ' ';
-	}
 public:
-	VerySlowCar() : x(8), y(14), speed(getDefaultSpeed()), skin('S') {}
+	VerySlowCar() : carX_(8), carY_(14), speed_(getDefaultSpeed()), skin_('S') {}
 
-	int getDefaultSpeed() { return 400; }
 
-	void control() {
+	int getDefaultSpeed() { 
+		return 400; 
+	}
+
+
+	void control() 
+	{
 		switch (_getch()) {
 		case 75:
-			if (x == 2) break;
+			if (carX_ == 2) 
+				break;
+
 			removeCar();
-			x -= 1;
+			carX_ -= 1;
 			break;
 
 		case 77:
-			if (x == 14) break;
+			if (carX_ == 14) 
+				break;
+
 			removeCar();
-			x += 1;
+			carX_ += 1;
 			break;
 
-		case 72: if (speed > 300) speed -= 20; break;
+		case 72: if (speed_ > 300) 
+					speed_ -= 20; 
+			break;
 
-		case 80: if (speed < 400) speed += 20; break;
+		case 80: if (speed_ < 400) 
+					speed_ += 20; 
+			break;
 
 		case 13:
 			while (true) {
 				if (_getch() == 13) {
 					break;
 				}
-			}; break;
+			}; 
+			break;
 
-		case 27: exit(0); break;
+		case 27: exit(0); 
+			break;
 		}
 
-		track[y][x] = skin;
-		track[y - 1][x] = skin;
-		track[y - 2][x] = skin;
-		track[y - 3][x] = skin;
-		track[y][x - 1] = skin;
-		track[y][x + 1] = skin;
-		track[y - 2][x - 1] = skin;
-		track[y - 2][x + 1] = skin;
+		track[carY_][carX_] = skin_;
+		track[carY_ - 1][carX_] = skin_;
+		track[carY_ - 2][carX_] = skin_;
+		track[carY_ - 3][carX_] = skin_;
+		track[carY_][carX_ - 1] = skin_;
+		track[carY_][carX_ + 1] = skin_;
+		track[carY_ - 2][carX_ - 1] = skin_;
+		track[carY_ - 2][carX_ + 1] = skin_;
 	}
 
-	void changeSpeed() {
-		Sleep(speed);
+
+	void changeSpeed()
+	{
+		Sleep(speed_);
 	}
 
-	int getX() { return x; }
-	int getY() { return y; }
-	void setX(int X) { x = X; }
-	void setY(int Y) { y = Y; }
 
-	int getSpeed() { return abs(speed - 400); }
-	void setSpeed(int sp) { speed = sp; }
+	int getX() { 
+		return carX_;
+	}
 
-	char getSkin() { return skin; }
+
+	int getY() { 
+		return carY_; 
+	}
+
+
+	void setX(int x) { 
+		carX_ = x; 
+	}
+
+
+	void setY(int y) {
+		carY_ = y; 
+	}
+
+
+	int getSpeed() {
+		return abs(speed_ - 400);
+	}
+
+
+	void setSpeed(int speed) {
+		speed_ = speed; 
+	}
+
+
+	char getSkin() {
+		return skin_; 
+	}
+
+
+private:
+	int carX_;
+	int carY_;
+	int speed_;
+	char skin_;
+
+
+	void removeCar() 
+	{
+		track[carY_][carX_] = ' ';
+		track[carY_ - 1][carX_] = ' ';
+		track[carY_ - 2][carX_] = ' ';
+		track[carY_ - 3][carX_] = ' ';
+		track[carY_][carX_ - 1] = ' ';
+		track[carY_][carX_ + 1] = ' ';
+		track[carY_ - 2][carX_ - 1] = ' ';
+		track[carY_ - 2][carX_ + 1] = ' ';
+	}
 };
 
 int main()
 {
-	//пользователь может выбрать машинку
+	//player can choose between two cars
 	string choice;
-	
-	//указателям присваиваются ссылки на временные объекты
-	Game* g[] = {&VerySlowCar(), &RegularCar()};
+
+	//pointers are assigned by references to temorary objects
+	Game* game[] = { &VerySlowCar(), &RegularCar() };
 
 	while (true) {
 		cout << "Do you want slow car or the regular one? (input slow/regular)" << endl;
 
 		cin >> choice;
 		system("cls");
-		
-		//запуск алгоритма
+
+		//run the algorithm
 		if (choice == "slow") {
-			g[0]->run();
+			game[0]->run();
 		}
 		else if (choice == "regular") {
-			g[1]->run();
+			game[1]->run();
 		}
-		
+
 		else cout << "INPUT SOMETHING RIGHT!" << endl;
 	}
+
+	delete[] game;
 
 	return 0;
 }
