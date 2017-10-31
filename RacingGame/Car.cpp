@@ -50,7 +50,7 @@ void Car::control()
 
 		case KEY_ENTER:
 			while (true) {
-				if (_getch() == 13) {
+				if (_getch() == KEY_ENTER) {
 					break;
 				}
 			};
@@ -73,65 +73,16 @@ void Car::changeSpeed()
 
 
 
-int Car::getX() 
-{
-	return carX_;
-}
-
-
-
-int Car::getY() 
-{
-	return carY_;
-}
-
-
-
-void Car::setX(int x) 
-{
-	carX_ = x;
-}
-
-
-
-void Car::setY(int y) 
-{
-	carY_ = y;
-}
-
-
-
-int Car::getSpeed() 
-{
-	return abs(speed_ - DEFAULT_SPEED);
-}
-
-
-
-void Car::setSpeed(int speed) 
-{
-	speed_ = speed;
-}
-
-
-
-char Car::getSkin() 
-{
-	return skin_;
-}
-
-
-
 void Car::drawCar(int y, int x, char c)
 {
-	track[y][x] = c;
-	track[y - 1][x] = c;
-	track[y - 2][x] = c;
-	track[y - 3][x] = c;
-	track[y][x - 1] = c;
-	track[y][x + 1] = c;
-	track[y - 2][x - 1] = c;
-	track[y - 2][x + 1] = c;
+	setTrack(y, x, c);
+	setTrack(y-1, x, c);
+	setTrack(y-2, x, c);
+	setTrack(y-3, x, c);
+	setTrack(y, x-1, c);
+	setTrack(y, x+1, c);
+	setTrack(y-2, x-1, c);
+	setTrack(y-2, x+1, c);
 }
 
 

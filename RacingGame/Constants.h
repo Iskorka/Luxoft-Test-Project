@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 namespace Constants {
 	const int DEFAULT_CAR_X = 8;
@@ -27,3 +28,5 @@ namespace Constants {
 
 	const int MAX_OBSTACLE_Y = 15;
 }
+
+#endif

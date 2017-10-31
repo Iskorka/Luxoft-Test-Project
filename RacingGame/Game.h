@@ -1,33 +1,39 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 #include <vector>
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include "Constants.h"
+#include "Drawer.h"
+#include "GameOver.h"
+#include "Calculations.h"
 
+using namespace Constants;
 
 
 class Game
 {
 public:
-
-	std::vector<std::string> track;
-
 	Game();
 
 	virtual void control() = 0;
 	virtual void changeSpeed() = 0;
-	virtual int getX() = 0;
-	virtual int getY() = 0;
+	virtual int getX() const = 0;
+	virtual int getY() const = 0;
 	virtual void setX(int X) = 0;
 	virtual void setY(int Y) = 0;
-	virtual int getSpeed() = 0;
+	virtual int getSpeed() const = 0;
 	virtual void setSpeed(int sp) = 0;
-	virtual char getSkin() = 0;
+	virtual char getSkin() const = 0;
+	
+	void setTrack(int, int, char);
 
-	//place a car on the track
+	std::vector<std::string> getTrack();
+
 	void placeCar();
 
-	//output the track into a console
-	void drawTrack();
-
-	//create and approach an obstacle
 	void generateObstacle();
 
 	//if car bumped into an obstacle, reset score and time, set best results and take off gameIsOn flag
@@ -44,12 +50,26 @@ private:
 	int startTime_, endTime_, bestTime_;
 	int obstacleX_, obstacleY_;
 	bool gameIsOn_; //game-is-running-flag
-
+	std::vector<std::string> track_;
 	void removeObstacle();
 
-	//generate random X axis for obstacle
-	int computeObstacleX();
-
-	int getTime();
+	Drawer drawer;
+	GameOver gameOver;
+	Calculations calculations;
 };
 
+
+
+
+inline void Game::setTrack(int y, int x, char c) {
+	track_[y][x] = c;
+}
+
+
+
+
+inline std::vector<std::string> Game::getTrack() {
+	return track_;
+}
+
+#endif

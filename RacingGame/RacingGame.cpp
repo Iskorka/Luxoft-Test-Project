@@ -1,8 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Game.h"
 #include "Car.h"
-#include <ctime>
-#include <iostream>
+
+
 
 int main()
 {
@@ -11,6 +11,8 @@ int main()
 	Game* game = &car ;
 
 	game->run();
+
+	delete game;
 
 	return 0;
 }

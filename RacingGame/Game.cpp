@@ -13,9 +13,9 @@ using namespace Constants;
 
 
 
-Game::Game() : score_(0), best_(0), endTime_(0), bestTime_(0), obstacleX_(computeObstacleX()), obstacleY_(0)
+Game::Game() : score_(0), best_(0), endTime_(0), bestTime_(0), obstacleX_(calculations.computeX(MIN_OBSTACLE_X, MAX_OBSTACLE_X)), obstacleY_(0)
 {
-	track = {	
+	track_ = {	
 		"|               |",
 		"|               |",
 		"|               |",
@@ -55,56 +55,43 @@ void Game::placeCar()
 	//clear the track
 	for (int i = 1; i<MAX_X - 1; i++)
 		for (int j = 0; j < MAX_Y; j++) {
-			track[j][i] = ' ';
+			setTrack(j, i, ' ');
 		}
 
-	track[y][x] = getSkin();
-	track[y - 1][x] = getSkin();
-	track[y - 2][x] = getSkin();
-	track[y - 3][x] = getSkin();
-	track[y][x - 1] = getSkin();
-	track[y][x + 1] = getSkin();
-	track[y - 2][x - 1] = getSkin();
-	track[y - 2][x + 1] = getSkin();
-}
-
-
-
-void Game::drawTrack()
-{
-	system("cls");
-
-	std::cout << "Score: " << score_ << " \tBest score: " << best_ << std::endl << "Time: " << getTime() << " \tBest time: " << bestTime_ << std::endl << "Speed: " << getSpeed() << std::endl;
-	
-	for (int i = 0; i < 18; i++) {
-		std::cout << track[i] << std::endl;
-	}
+	setTrack(y, x, getSkin());
+	setTrack(y - 1, x, getSkin());
+	setTrack(y - 2, x, getSkin());
+	setTrack(y - 3, x, getSkin());
+	setTrack(y, x - 1, getSkin());
+	setTrack(y, x + 1, getSkin());
+	setTrack(y - 2, x - 1, getSkin());
+	setTrack(y - 2, x + 1, getSkin());;
 }
 
 
 
 void Game::generateObstacle()
 {
-	if (obstacleY_ < 15) {
+	if (obstacleY_ < MAX_OBSTACLE_Y) {
 		removeObstacle();
 
 		obstacleY_ += 1;
-		track[obstacleY_][obstacleX_] = 'T';
-		track[obstacleY_ + 1][obstacleX_] = 'T';
-		track[obstacleY_ + 2][obstacleX_] = 'T';
-		track[obstacleY_][obstacleX_ + 1] = 'T';
-		track[obstacleY_ + 1][obstacleX_ + 1] = 'T';
-		track[obstacleY_ + 2][obstacleX_ + 1] = 'T';
-		track[obstacleY_][obstacleX_ - 1] = 'T';
-		track[obstacleY_ + 1][obstacleX_ - 1] = 'T';
-		track[obstacleY_ + 2][obstacleX_ - 1] = 'T';
+		setTrack(obstacleY_, obstacleX_, 'T');
+		setTrack(obstacleY_ + 1, obstacleX_, 'T');
+		setTrack(obstacleY_ + 2, obstacleX_, 'T');
+		setTrack(obstacleY_, obstacleX_ + 1, 'T');
+		setTrack(obstacleY_ + 1, obstacleX_ + 1, 'T');
+		setTrack(obstacleY_ + 2, obstacleX_ + 1, 'T');
+		setTrack(obstacleY_, obstacleX_ - 1, 'T');
+		setTrack(obstacleY_ + 1, obstacleX_ - 1, 'T');
+		setTrack(obstacleY_ + 2, obstacleX_ - 1, 'T');
 	}
 
-	else if (obstacleY_ == 15) {
+	else if (obstacleY_ == MAX_OBSTACLE_Y) {
 		removeObstacle();
 
 		obstacleY_ = 0;
-		obstacleX_ = computeObstacleX();
+		obstacleX_ = calculations.computeX(MIN_OBSTACLE_X, MAX_OBSTACLE_X);
 	}
 }
 
@@ -112,32 +99,23 @@ void Game::generateObstacle()
 
 void Game::bump()
 {
-	char car = getSkin();
-
-	int y = getY();
-	int x = getX();
-
-	if (track[y][x] != car || 
-		track[y - 1][x] != car || 
-		track[y - 2][x] != car || 
-		track[y - 3][x] != car || 
-		track[y][x - 1] != car || 
-		track[y][x + 1] != car || 
-		track[y - 2][x - 1] != car || 
-		track[y - 2][x + 1] != car) 
+	if (gameOver.isCrushed(track_, getSkin(), getY(), getX()))
 	{
 		std::cout << "Game Over\nPress ENTER to try again" << std::endl;
 
-		if (score_ > best_)
+		if (score_ > best_) {
 			best_ = score_;
+		}
 
-		if (getTime() > bestTime_)
-			bestTime_ = getTime();
+		if (calculations.getTime(startTime_, endTime_) > bestTime_) {
+			bestTime_ = calculations.getTime(startTime_, endTime_);
+		}
 
 		setSpeed(DEFAULT_SPEED);
 
 		obstacleY_ = 0;
-		obstacleX_ = computeObstacleX();
+		obstacleX_ = calculations.computeX(MIN_OBSTACLE_X, MAX_OBSTACLE_X);
+		score_ = 0;
 
 		gameIsOn_ = false;
 	}
@@ -154,7 +132,10 @@ void Game::run()
 		if (_getch() == KEY_ENTER) {
 			placeCar();
 			while (gameIsOn_) {
-				drawTrack();
+				system("cls");
+				std::cout << "Score: " << score_ << " \tBest score: " << best_ << std::endl << "Time: " << calculations.getTime(startTime_, endTime_) << " \tBest time: " << bestTime_ << std::endl << "Speed: " << getSpeed() << std::endl;
+				
+				drawer.drawTrack(track_);
 				bump();
 
 				while (_kbhit()) {
@@ -179,30 +160,19 @@ void Game::run()
 
 void Game::removeObstacle()
 {
-	track[obstacleY_][obstacleX_] = ' ';
-	track[obstacleY_ + 1][obstacleX_] = ' ';
-	track[obstacleY_ + 2][obstacleX_] = ' ';
-	track[obstacleY_][obstacleX_ + 1] = ' ';
-	track[obstacleY_ + 1][obstacleX_ + 1] = ' ';
-	track[obstacleY_ + 2][obstacleX_ + 1] = ' ';
-	track[obstacleY_][obstacleX_ - 1] = ' ';
-	track[obstacleY_ + 1][obstacleX_ - 1] = ' ';
-	track[obstacleY_ + 2][obstacleX_ - 1] = ' ';
+	setTrack(obstacleY_, obstacleX_, ' ');
+	setTrack(obstacleY_ + 1, obstacleX_, ' ');
+	setTrack(obstacleY_ + 2, obstacleX_, ' ');
+	setTrack(obstacleY_, obstacleX_ + 1, ' ');
+	setTrack(obstacleY_ + 1, obstacleX_ + 1, ' ');
+	setTrack(obstacleY_ + 2, obstacleX_ + 1, ' ');
+	setTrack(obstacleY_, obstacleX_ - 1, ' ');
+	setTrack(obstacleY_ + 1, obstacleX_ - 1, ' ');
+	setTrack(obstacleY_ + 2, obstacleX_ - 1, ' ');
 }
 
 
-//generate random X axis for obstacle
-int Game::computeObstacleX()
-{
-	srand(time(0));
-	return rand() % (MAX_OBSTACLE_X - MIN_OBSTACLE_X + 1) + MIN_OBSTACLE_X; //rand() (b - a + 1) + a
-}
 
-
-int Game::getTime()
-{
-	return (endTime_ - startTime_) / 1000;
-}
 
 
 Game::~Game()
