@@ -7,9 +7,9 @@ public:
 	Calculations();
 
 	//generate random X 
-	int computeX(int, int);
+	int computeX(int min, int max);
 
-	int getTime(int, int);
+	int getTime(int startTime, int endTime);
 
 	~Calculations();
 };

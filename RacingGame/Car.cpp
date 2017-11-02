@@ -73,16 +73,16 @@ void Car::changeSpeed()
 
 
 
-void Car::drawCar(int y, int x, char c)
+void Car::drawCar(int y, int x, char carSkin)
 {
-	setTrack(y, x, c);
-	setTrack(y-1, x, c);
-	setTrack(y-2, x, c);
-	setTrack(y-3, x, c);
-	setTrack(y, x-1, c);
-	setTrack(y, x+1, c);
-	setTrack(y-2, x-1, c);
-	setTrack(y-2, x+1, c);
+	setTrack(y, x, carSkin);
+	setTrack(y-AXIS_SHIFT, x, carSkin);
+	setTrack(y-AXIS_DOUBLE_SHIFT, x, carSkin);
+	setTrack(y-AXIS_TRIPLE_SHIFT, x, carSkin);
+	setTrack(y, x-AXIS_SHIFT, carSkin);
+	setTrack(y, x+AXIS_SHIFT, carSkin);
+	setTrack(y-AXIS_DOUBLE_SHIFT, x-AXIS_SHIFT, carSkin);
+	setTrack(y-AXIS_DOUBLE_SHIFT, x+AXIS_SHIFT, carSkin);
 }
 
 

@@ -28,9 +28,9 @@ public:
 	virtual void setSpeed(int sp) = 0;
 	virtual char getSkin() const = 0;
 	
-	void setTrack(int, int, char);
+	void setTrack(int y, int x, char skin);
 
-	std::vector<std::string> getTrack();
+	std::vector<std::string> getTrack() const;
 
 	void placeCar();
 
@@ -53,22 +53,22 @@ private:
 	std::vector<std::string> track_;
 	void removeObstacle();
 
-	Drawer drawer;
-	GameOver gameOver;
-	Calculations calculations;
+	Drawer drawer_;
+	GameOver gameOver_;
+	Calculations calculations_;
 };
 
 
 
 
-inline void Game::setTrack(int y, int x, char c) {
-	track_[y][x] = c;
+inline void Game::setTrack(int y, int x, char skin) {
+	track_[y][x] = skin;
 }
 
 
 
 
-inline std::vector<std::string> Game::getTrack() {
+inline std::vector<std::string> Game::getTrack() const {
 	return track_;
 }
 

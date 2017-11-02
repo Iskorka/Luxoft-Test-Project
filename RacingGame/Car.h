@@ -16,19 +16,19 @@ public:
 	//set delay (which represents speed of the car)
 	void changeSpeed();
 
-	inline int getX() const;
+	int getX() const;
 
-	inline int getY() const;
+	int getY() const;
 
-	inline void setX(int);
+	void setX(int x);
 
-	inline void setY(int);
+	void setY(int y);
 
-	inline int getSpeed() const;
+	int getSpeed() const;
 
-	inline void setSpeed(int);
+	void setSpeed(int speed);
 
-	inline char getSkin() const;
+	char getSkin() const;
 
 	~Car();
 private:
@@ -38,40 +38,40 @@ private:
 	char skin_;
 
 
-	void drawCar(int y, int x, char c);
+	void drawCar(int y, int x, char carSkin);
 
 	
 };
 
-int Car::getX() const
+inline int Car::getX() const
 {
 	return carX_;
 }
 
 
 
-int Car::getY() const
+inline int Car::getY() const
 {
 	return carY_;
 }
 
 
 
-char Car::getSkin() const
+inline char Car::getSkin() const
 {
 	return skin_;
 }
 
 
 
-int Car::getSpeed() const
+inline int Car::getSpeed() const
 {
 	return abs(speed_ - DEFAULT_SPEED);
 }
 
 
 
-void Car::setY(int y)
+inline void Car::setY(int y)
 {
 	carY_ = y;
 }
@@ -79,14 +79,14 @@ void Car::setY(int y)
 
 
 
-void Car::setSpeed(int speed)
+inline void Car::setSpeed(int speed)
 {
 	speed_ = speed;
 }
 
 
 
-void Car::setX(int x)
+inline void Car::setX(int x)
 {
 	carX_ = x;
 }

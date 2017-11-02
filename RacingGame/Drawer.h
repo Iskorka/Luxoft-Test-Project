@@ -7,7 +7,7 @@ class Drawer
 public:
 	Drawer();
 
-	void drawTrack(std::vector<std::string>);
+	void drawTrack(std::vector<std::string> track);
 
 	~Drawer();
 };

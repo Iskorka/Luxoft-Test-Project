@@ -8,7 +8,7 @@ class GameOver
 public:
 	GameOver();
 
-	bool isCrushed(std::vector<std::string>, char, int, int);
+	bool isCrushed(std::vector<std::string> track, char car, int carY, int carX);
 
 	~GameOver();
 

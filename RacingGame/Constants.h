@@ -20,6 +20,8 @@ namespace Constants {
 	const int MAX_SPEED = 150;
 	const int SPEED_INCREMENT = 50;
 
+	const int MIN_X = 0;
+	const int MIN_Y = 0;
 	const int MAX_X = 17;
 	const int MAX_Y = 18;
 
@@ -27,6 +29,13 @@ namespace Constants {
 	const int MAX_OBSTACLE_X = 14;
 
 	const int MAX_OBSTACLE_Y = 15;
+
+	const int AXIS_SHIFT = 1;
+	const int AXIS_DOUBLE_SHIFT = 2;
+	const int AXIS_TRIPLE_SHIFT = 3;
+	const int ONE_SECOND = 1000;
+
+	const char OBSTACLE_SKIN = 'T';
 }
 
 #endif

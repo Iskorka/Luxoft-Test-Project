@@ -2,7 +2,7 @@
 #include "Calculations.h"
 #include <ctime>
 #include <random>
-
+#include "Constants.h"
 
 
 Calculations::Calculations()
@@ -20,7 +20,7 @@ int Calculations::computeX(int min, int max)
 
 int Calculations::getTime(int startTime, int endTime)
 {
-	return (endTime - startTime) / 1000;
+	return (endTime - startTime) / Constants::ONE_SECOND;
 }
 
 
