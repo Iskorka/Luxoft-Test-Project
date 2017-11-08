@@ -28,48 +28,20 @@ public:
 	virtual void setSpeed(int sp) = 0;
 	virtual char getSkin() const = 0;
 	
-	void setTrack(int y, int x, char skin);
-
-	std::vector<std::string> getTrack() const;
-
-	void placeCar();
-
-	void generateObstacle();
-
-	//if car bumped into an obstacle, reset score and time, set best results and take off gameIsOn flag
-	void bump();
-
-	//algorithm that launches the game
-	void run();
 
 	~Game();
 
-private:
+protected:
 	int score_;
 	int best_;
 	int startTime_, endTime_, bestTime_;
 	int obstacleX_, obstacleY_;
 	bool gameIsOn_; //game-is-running-flag
 	std::vector<std::string> track_;
-	void removeObstacle();
 
 	Drawer drawer_;
 	GameOver gameOver_;
 	Calculations calculations_;
 };
-
-
-
-
-inline void Game::setTrack(int y, int x, char skin) {
-	track_[y][x] = skin;
-}
-
-
-
-
-inline std::vector<std::string> Game::getTrack() const {
-	return track_;
-}
 
 #endif

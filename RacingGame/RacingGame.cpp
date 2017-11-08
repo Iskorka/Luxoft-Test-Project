@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Game.h"
+#include "Execution.h"
 #include "Car.h"
 
 
@@ -8,7 +9,7 @@ int main()
 {
 	Car car;
 
-	Game* game = &car ;
+	Execution* game = &car ;
 
 	game->run();
 

@@ -1,11 +1,12 @@
 #ifndef CAR_H
 #define CAR_H
 #include "Game.h"
+#include "Execution.h"
 #include "Constants.h"
 
 using namespace Constants;
 
-class Car : public Game
+class Car : public Execution
 {
 public:
 	Car();
